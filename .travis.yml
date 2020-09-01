@@ -6,24 +6,19 @@ cache: bundler
 before_install:
  - wget https://raw.githubusercontent.com/progit/progit2-pub/master/bootstrap.sh
  - sh bootstrap.sh
-script: bundle exec rake book:build
-after_success: bundle exec rake book:tag
+script:
+  - bundle exec rake book:build
+  - mkdir public
+  - cp progit.html public/index.html
+  - cp progit.{pdf,epub} public/
+  - cp -r images/ public/
 deploy:
-  provider: releases
-  file_glob: true
-  file:
-  - progit*.epub
-  - progit*.mobi
-  - progit*.pdf
+  provider: pages
   skip_cleanup: true
+  github_token: $GITHUB_API_TOKEN
+  local_dir: ./public
   on:
-    tags: true
-  api-key: $GITHUB_API_TOKEN
-branches:
-  only:
-  - master
-  - /^2\.1(\.\d+)+$/
-
+    branch: develop
 addons:
   apt:
     packages:
